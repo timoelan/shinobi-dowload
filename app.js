@@ -2,7 +2,7 @@
 // -> Download über signierte URLs (10 min). Grosse Zips liegen in Teilen (.part0 …) und werden im Browser zusammengesetzt.
 const sb = supabase.createClient(SHINOBI.url, SHINOBI.key);
 const $ = (id) => document.getElementById(id);
-const show = (id) => ["login", "locked", "downloads"].forEach((s) => $(s).classList.toggle("hidden", s !== id));
+const show = (id) => ["login", "register", "locked", "downloads"].forEach((s) => $(s).classList.toggle("hidden", s !== id));
 const mb = (b) => (b / 1048576).toFixed(1) + " MB";
 const NAMES = { mac: "Mac (Apple Silicon + Intel)", windows: "Windows (64 Bit)" };
 
@@ -86,3 +86,23 @@ $("login-form").onsubmit = async (e) => {
 };
 document.querySelectorAll("[data-logout]").forEach((b) => (b.onclick = async () => { await sb.auth.signOut(); show("login"); }));
 refresh();
+
+// Neues Konto (gleiches Konto wie im Spiel; Username landet per Trigger in profiles, Freischaltung macht der Admin).
+$("to-register").onclick = (e) => { e.preventDefault(); show("register"); };
+$("to-login").onclick = (e) => { e.preventDefault(); show("login"); };
+$("reg-form").onsubmit = async (e) => {
+	e.preventDefault();
+	const msg = $("reg-msg");
+	msg.className = "msg";
+	const name = $("r-name").value.trim();
+	if ($("r-pw").value !== $("r-pw2").value) return (msg.textContent = "Passwörter sind nicht gleich.");
+	const { data: free, error: e1 } = await sb.rpc("username_available", { name });
+	if (e1) return (msg.textContent = "Fehler: " + e1.message);
+	if (!free) return (msg.textContent = "Username ist schon vergeben oder ungültig.");
+	const { data, error } = await sb.auth.signUp({ email: $("r-email").value.trim(), password: $("r-pw").value, options: { data: { username: name } } });
+	if (error) return (msg.textContent = /registered|exists/i.test(error.message) ? "Diese E-Mail hat schon ein Konto." : error.message);
+	msg.className = "msg ok";
+	msg.textContent = "Konto erstellt!";
+	if (data.session) refresh();
+	else { show("login"); $("login-msg").className = "msg ok"; $("login-msg").textContent = "Konto erstellt – jetzt anmelden."; }
+};

@@ -25,6 +25,21 @@
 			<button type="submit">Anmelden</button>
 		</form>
 		<p id="login-msg" class="msg"></p>
+		<p class="dim">Noch kein Account? <a href="#" id="to-register">Neues Konto erstellen</a></p>
+	</section>
+
+	<section id="register" class="panel hidden">
+		<h2>Neues Konto</h2>
+		<p class="dim">Dieses Konto gilt auch im Spiel. Danach muss der Admin es freischalten.</p>
+		<form id="reg-form">
+			<label>Username (3–20 Zeichen: A–Z, 0–9, _) <input id="r-name" pattern="[A-Za-z0-9_]{3,20}" required></label>
+			<label>E-Mail <input type="email" id="r-email" autocomplete="username" required></label>
+			<label>Passwort (mind. 6 Zeichen) <input type="password" id="r-pw" minlength="6" autocomplete="new-password" required></label>
+			<label>Passwort wiederholen <input type="password" id="r-pw2" minlength="6" autocomplete="new-password" required></label>
+			<button type="submit">Konto erstellen</button>
+		</form>
+		<p id="reg-msg" class="msg"></p>
+		<p class="dim"><a href="#" id="to-login">Zurück zum Login</a></p>
 	</section>
 
 	<section id="locked" class="panel hidden">
