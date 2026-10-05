@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shinobi Fighter – Download</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="sky"></div>
+<main>
+	<header>
+		<h1>SHINOBI FIGHTER</h1>
+		<p class="sub">Private Downloads für die Gruppe</p>
+	</header>
+
+	<section id="login" class="panel hidden">
+		<h2>Anmelden</h2>
+		<p class="dim">Mit demselben Account wie im Spiel.</p>
+		<form id="login-form">
+			<label>E-Mail <input type="email" id="email" autocomplete="username" required></label>
+			<label>Passwort <input type="password" id="pw" autocomplete="current-password" required></label>
+			<button type="submit">Anmelden</button>
+		</form>
+		<p id="login-msg" class="msg"></p>
+	</section>
+
+	<section id="locked" class="panel hidden">
+		<h2>Noch nicht freigeschaltet</h2>
+		<p>Dein Account ist noch nicht freigeschaltet. Frag den Admin, dann hier neu laden.</p>
+		<button class="ghost" data-logout>Abmelden</button>
+	</section>
+
+	<section id="downloads" class="panel hidden">
+		<div class="row"><h2>Downloads</h2><span id="who" class="dim"></span></div>
+		<div id="cards" class="cards"></div>
+		<p id="dl-msg" class="msg"></p>
+		<button class="ghost" data-logout>Abmelden</button>
+	</section>
+
+	<section class="panel">
+		<h2>Installieren</h2>
+		<div class="cards">
+			<div class="card">
+				<h3>Mac</h3>
+				<ol>
+					<li>ZIP öffnen (Doppelklick).</li>
+					<li><b>ShinobiFighter.app</b> in den Ordner <b>Programme</b> ziehen.</li>
+					<li>Rechtsklick auf die App → <b>Öffnen</b> → nochmals <b>Öffnen</b>.</li>
+					<li>Meldung „beschädigt“? Terminal öffnen und eingeben:<br><code>xattr -cr /Applications/ShinobiFighter.app</code></li>
+				</ol>
+			</div>
+			<div class="card">
+				<h3>Windows</h3>
+				<ol>
+					<li>ZIP entpacken (Rechtsklick → Alle extrahieren).</li>
+					<li><b>ShinobiFighter.exe</b> starten.</li>
+					<li>SmartScreen: <b>Weitere Informationen</b> → <b>Trotzdem ausführen</b>.</li>
+					<li>Firewall-Frage: <b>Zulassen</b> (privates Netzwerk).</li>
+				</ol>
+			</div>
+			<div class="card">
+				<h3>Online spielen</h3>
+				<ol>
+					<li><a href="https://tailscale.com/download" target="_blank" rel="noopener">Tailscale</a> installieren.</li>
+					<li>Einladung in die Gruppe annehmen und anmelden.</li>
+					<li>Im Spiel: Kämpfen → Online → Lobby erstellen oder Code eingeben.</li>
+				</ol>
+			</div>
+		</div>
+	</section>
+	<footer class="dim">Shinobi Fighter · privates Projekt</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
