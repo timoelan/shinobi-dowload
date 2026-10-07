@@ -14,6 +14,19 @@ async function refresh() {
 	const { data: prof } = await sb.from("profiles").select("username").eq("id", session.user.id).maybeSingle();
 	$("who").textContent = "Angemeldet als " + (prof ? prof.username : session.user.email);
 	const { data: rel, error } = await sb.from("releases").select("*").order("created_at", { ascending: false });
+	const { data: lb } = await sb.from("launcher_builds").select("*").eq("kind", "full").order("created_at", { ascending: false });
+	const lc = $("lcards");
+	lc.innerHTML = "";
+	const me = /Mac/i.test(navigator.platform || navigator.userAgent) ? "mac" : "windows";
+	for (const plat of [me, me === "mac" ? "windows" : "mac"]) {
+		const r = (lb || []).find((x) => x.platform === plat);
+		const card = document.createElement("div");
+		card.className = "card";
+		if (!r) { card.innerHTML = `<h3>${NAMES[plat]}</h3><p class="dim">Noch nicht verfügbar.</p>`; lc.appendChild(card); continue; }
+		card.innerHTML = `<h3>Launcher – ${NAMES[plat]}</h3><div class="meta">v${r.version} · ${mb(r.size_bytes)}</div><button>Launcher laden</button><div class="bar hidden"><i></i></div>`;
+		card.querySelector("button").onclick = (e) => download(r, e.target, card.querySelector(".bar"));
+		lc.appendChild(card);
+	}
 	const cards = $("cards");
 	cards.innerHTML = "";
 	if (error) $("dl-msg").textContent = "Fehler: " + error.message;
