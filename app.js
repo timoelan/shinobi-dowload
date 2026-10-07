@@ -6,7 +6,32 @@ const show = (id) => ["login", "register", "locked", "downloads"].forEach((s) =>
 const mb = (b) => (b / 1048576).toFixed(1) + " MB";
 const NAMES = { mac: "Mac (Apple Silicon + Intel)", windows: "Windows (64 Bit)" };
 
+// Öffentlicher Download (009_public_launcher.sql): Launcher ohne Login. Fehlt die Freigabe, bleibt der Login-Weg.
+async function publicDownloads() {
+	const { data: lb, error } = await sb.from("launcher_builds").select("*").eq("kind", "full").order("created_at", { ascending: false });
+	if (error || !lb || lb.length === 0) return false;
+	fillLauncher($("pcards"), lb);
+	["login", "register", "locked", "downloads"].forEach((s) => $(s).classList.add("hidden"));
+	$("public").classList.remove("hidden");
+	return true;
+}
+
+function fillLauncher(lc, lb) {
+	lc.innerHTML = "";
+	const me = /Mac/i.test(navigator.platform || navigator.userAgent) ? "mac" : "windows";
+	for (const plat of [me, me === "mac" ? "windows" : "mac"]) {
+		const r = lb.find((x) => x.platform === plat);
+		const card = document.createElement("div");
+		card.className = "card";
+		if (!r) { card.innerHTML = `<h3>${NAMES[plat]}</h3><p class="dim">Noch nicht verfügbar.</p>`; lc.appendChild(card); continue; }
+		card.innerHTML = `<h3>${plat === me ? "Für deinen Computer: " : ""}${NAMES[plat]}</h3><div class="meta">VinoGames v${r.version} · ${mb(r.size_bytes)}</div><button>Launcher herunterladen</button><div class="bar hidden"><i></i></div>`;
+		card.querySelector("button").onclick = (e) => download(r, e.target, card.querySelector(".bar"));
+		lc.appendChild(card);
+	}
+}
+
 async function refresh() {
+	if (await publicDownloads()) return;
 	const { data: { session } } = await sb.auth.getSession();
 	if (!session) return show("login");
 	const { data: mem } = await sb.from("members").select("approved").eq("user_id", session.user.id).maybeSingle();
@@ -31,7 +56,7 @@ async function refresh() {
 }
 
 async function download(r, btn, bar) {
-	const msg = $("dl-msg");
+	const msg = $("public").classList.contains("hidden") ? $("dl-msg") : $("p-msg");
 	msg.className = "msg";
 	msg.textContent = "";
 	btn.disabled = true;
