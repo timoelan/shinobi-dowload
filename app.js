@@ -13,8 +13,7 @@ async function refresh() {
 	if (!mem || !mem.approved) return show("locked");
 	const { data: prof } = await sb.from("profiles").select("username").eq("id", session.user.id).maybeSingle();
 	$("who").textContent = "Angemeldet als " + (prof ? prof.username : session.user.email);
-	const { data: rel, error } = await sb.from("releases").select("*").order("created_at", { ascending: false });
-	const { data: lb } = await sb.from("launcher_builds").select("*").eq("kind", "full").order("created_at", { ascending: false });
+	const { data: lb, error } = await sb.from("launcher_builds").select("*").eq("kind", "full").order("created_at", { ascending: false });
 	const lc = $("lcards");
 	lc.innerHTML = "";
 	const me = /Mac/i.test(navigator.platform || navigator.userAgent) ? "mac" : "windows";
@@ -27,25 +26,7 @@ async function refresh() {
 		card.querySelector("button").onclick = (e) => download(r, e.target, card.querySelector(".bar"));
 		lc.appendChild(card);
 	}
-	const cards = $("cards");
-	cards.innerHTML = "";
 	if (error) $("dl-msg").textContent = "Fehler: " + error.message;
-	const mine = /Mac/i.test(navigator.platform || navigator.userAgent) ? "mac" : "windows";
-	for (const plat of [mine, mine === "mac" ? "windows" : "mac"]) {
-		const r = (rel || []).find((x) => x.platform === plat);
-		const card = document.createElement("div");
-		card.className = "card";
-		if (!r) {
-			card.innerHTML = `<h3>${NAMES[plat]}</h3><p class="dim">Noch keine Version hochgeladen.</p>`;
-		} else {
-			card.innerHTML = `<h3>${NAMES[plat]}</h3>
-				<div class="meta">v${r.version} · ${mb(r.size_bytes)} · ${new Date(r.created_at).toLocaleDateString("de-CH")}</div>
-				<div class="changelog"></div><button>Download v${r.version}</button><div class="bar hidden"><i></i></div>`;
-			card.querySelector(".changelog").textContent = r.changelog || "";
-			card.querySelector("button").onclick = (e) => download(r, e.target, card.querySelector(".bar"));
-		}
-		cards.appendChild(card);
-	}
 	show("downloads");
 }
 
